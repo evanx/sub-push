@@ -1,0 +1,32 @@
+{
+  "name": "sub-push",
+  "version": "0.0.1",
+  "description": "Subscribe to Redis channel and push messages to a Redis list",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --cache src",
+    "test": "babel src/index.js --out-file build/index.js; NODE_ENV=test /opt/node7/bin/node build/index.js",
+    "development": "babel src/index.js --out-file build/index.js; NODE_ENV=development /opt/node7/bin/node build/index.js",
+    "production": "NODE_ENV=production pm2 --interpreter /opt/node7/bin/node start build/index.js --name `basename $PWD`"
+  },
+  "author": "Evan Summers",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "lodash": "^4.17.2",
+    "redis": "^2.6.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2017": "^6.16.0",
+    "eslint": "^3.12.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evanx/sub-push.git"
+  },
+  "bugs": {
+    "url": "https://github.com/evanx/sub-push/issues"
+  },
+  "homepage": "https://github.com/evanx/sub-push#readme"
+}
