@@ -64,14 +64,16 @@ const createRedisLogger = (client, loggerName) =>
 }, {});
 ```
 where logged errors are specially handled i.e. a slice of the `stack` is logged e.g.:
-```
+```json
 [
   "error",
-  "ReferenceError: queue is not defined",
-  "    at /home/evanx/phantomjs-redis/build/index.js:57:59",
-  "    at Generator.next (<anonymous>)",
-  "    at step (/home/evanx/phantomjs-redis/build/index.js:119:191)",
-  "    at /home/evans/phantomjs-redis/build/index.js:119:437"
+  [
+    "ReferenceError: queue is not defined",
+    "    at /home/evans/phantomjs-redis/build/index.js:57:59",
+    "    at Generator.next (<anonymous>)",
+    "    at step (/home/evans/phantomjs-redis/build/index.js:119:191)",
+    "    at /home/evans/phantomjs-redis/build/index.js:119:437"
+  ]
 ]
 ```
 where the first element `error` is the logger `level` which indicates this was logged via `logger.error()`
