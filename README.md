@@ -20,7 +20,7 @@ while /bin/true ; do redis-cli brpop logger:test 4 | grep '^\[' | jq '.'; done
 ```
 where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop`
 
-Manually publishing a test logging message:
+We manually publish a test logging message as follows:
 ```
 redis-cli publish logger:test '["info", {"name": "evanx"}]'
 ```
