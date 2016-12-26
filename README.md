@@ -47,7 +47,7 @@ const createRedisLogger = (client, loggerName) =>
         } else if (level === 'debug' && process.env.NODE_ENV === 'production') {
         } else {
             const array = [].slice.call(arguments);
-            const messageJson = JSON.stringify(lodash.flatten([
+            const messageJson = JSON.stringify([
                 level,
                 ...array.map(item => {
                     if (lodash.isError(item)) {
@@ -56,7 +56,7 @@ const createRedisLogger = (client, loggerName) =>
                         return item;
                     }
                 })
-            ]));
+            ]);
             client.publish(['logger', loggerName].join(':'), messageJson);
         }
     };
