@@ -20,7 +20,7 @@ Manually publishing a test logging message:
 ```
 redis-cli publish log:test '["info", {"name": "evanx"}]'
 ```
-where we see:
+Then we see:
 ```json
 [
   "info",
