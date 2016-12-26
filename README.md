@@ -8,14 +8,26 @@ For example the following command line runs the service to subscribe to channel 
 ```
 trimLength=99 subscribeChannel=log:test pushQueue=log:test npm start
 ```
+where `trimLength` ensures the list is continually trimmed for safety purposes.
+
 Then `redis-cli brpop` and pipe to `jq` for JSON formatting:
 ```
-while [ 1 ] ; do redis-cli brpop log:test 4 | grep -v '^[a-z]' | jq '.'; done
+while [ 1 ] ; do redis-cli brpop log:test 4 | grep '^\[' | jq '.'; done
 ```
+where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `log:test` also returned by `brpop`
+
 Manually publishing a test logging message:
 ```
-redis-cli publish log:test '["mylogger", "info", {"name": "evanx"}]'
+redis-cli publish log:test '["info", {"name": "evanx"}]'
 ```
+where we see:
+```json
+[
+  "info",
+  {
+    "name": "evanx"
+  }
+]```
 
 Sample Node code for a client logger that publishes via Redis:
 ```javascript
