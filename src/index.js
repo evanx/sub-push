@@ -3,23 +3,14 @@ const lodash = require('lodash');
 const Promise = require('bluebird');
 
 const envName = process.env.NODE_ENV || 'production';
-const config = require(process.env.configFile || '../config/' + envName);
+const envKeys = ['subscribeChannel', 'pushQueue', 'trimLength'];
+const config = {};
 const state = {};
 const redis = require('redis');
 const client = Promise.promisifyAll(redis.createClient());
+const sub = redis.createClient();
 
-class Counter {
-    constructor() {
-        this.count = 0;
-    }
-}
-
-class TimestampedCounter {
-    constructor() {
-        this.timestamp = Date.now();
-        this.count = 0;
-    }
-}
+assert(process.env.NODE_ENV);
 
 async function multiExecAsync(client, multiFunction) {
     const multi = client.multi();
@@ -27,36 +18,48 @@ async function multiExecAsync(client, multiFunction) {
     return Promise.promisify(multi.exec).call(multi);
 }
 
-async function delay(duration) {
-    logger.debug('delay', duration);
-    return new Promise(resolve => setTimeout(resolve, duration));
-}
-
 async function start() {
     state.started = Math.floor(Date.now()/1000);
     state.pid = process.pid;
-    state.instanceId = await client.incrAsync(`${config.namespace}:instance:seq`);
-    logger.info('start', {config, state});
-    const instanceKey = `${config.namespace}:instance:${state.instanceId}:h`;
-    await multiExecAsync(client, multi => {
-        ['started', 'pid'].forEach(property => {
-            multi.hset(instanceKey, property, state[property]);
-        });
-        multi.expire(instanceKey, config.processExpire);
-    });
+    const missingProps = lodash.compact(envKeys.map(key => {
+        if (process.env[key]) {
+            config[key] = process.env[key];
+        } else {
+            return key;
+        }
+    }));
+    if (missingProps.length) {
+        throw new Error('Missing required config properties: ' + missingProps.join(', '));
+    }
+    console.log('start', {config, state});
     if (process.env.NODE_ENV === 'development') {
-        await startDevelopment();
+        return startDevelopment();
     } else if (process.env.NODE_ENV === 'test') {
         return startTest();
     } else {
+        return startProduction();
     }
-    return end();
 }
 
 async function startTest() {
+    return startProduction();
 }
 
 async function startDevelopment() {
+    return startProduction();
+}
+
+async function startProduction() {
+    sub.on('message', (channel, message) => {
+        if (process.env.NODE_ENV !== 'production') {
+            console.log({channel, message});
+        }
+        multiExecAsync(client, multi => {
+            multi.lpush(config.pushQueue, message);
+            multi.ltrim(config.pushQueue, 0, config.trimLength);
+        });
+    });
+    return sub.subscribe(config.subscribeChannel);
 }
 
 async function end() {

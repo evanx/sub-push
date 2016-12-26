@@ -10,57 +10,70 @@ let multiExecAsync = (() => {
     };
 })();
 
-let delay = (() => {
-    var _ref2 = _asyncToGenerator(function* (duration) {
-        logger.debug('delay', duration);
-        return new Promise(function (resolve) {
-            return setTimeout(resolve, duration);
-        });
+let start = (() => {
+    var _ref2 = _asyncToGenerator(function* () {
+        state.started = Math.floor(Date.now() / 1000);
+        state.pid = process.pid;
+        const missingProps = lodash.compact(envKeys.map(function (key) {
+            if (process.env[key]) {
+                config[key] = process.env[key];
+            } else {
+                return key;
+            }
+        }));
+        if (missingProps.length) {
+            throw new Error('Missing required config properties: ' + missingProps.join(', '));
+        }
+        console.log('start', { config, state });
+        if (process.env.NODE_ENV === 'development') {
+            return startDevelopment();
+        } else if (process.env.NODE_ENV === 'test') {
+            return startTest();
+        } else {
+            return startProduction();
+        }
     });
 
-    return function delay(_x3) {
+    return function start() {
         return _ref2.apply(this, arguments);
     };
 })();
 
-let start = (() => {
+let startTest = (() => {
     var _ref3 = _asyncToGenerator(function* () {
-        state.started = Math.floor(Date.now() / 1000);
-        state.pid = process.pid;
-        state.instanceId = yield client.incrAsync(`${ config.namespace }:instance:seq`);
-        logger.info('start', { config, state });
-        const instanceKey = `${ config.namespace }:instance:${ state.instanceId }:h`;
-        yield multiExecAsync(client, function (multi) {
-            ['started', 'pid'].forEach(function (property) {
-                multi.hset(instanceKey, property, state[property]);
-            });
-            multi.expire(instanceKey, config.processExpire);
-        });
-        if (process.env.NODE_ENV === 'development') {
-            yield startDevelopment();
-        } else if (process.env.NODE_ENV === 'test') {
-            return startTest();
-        } else {}
-        return end();
+        return startProduction();
     });
 
-    return function start() {
+    return function startTest() {
         return _ref3.apply(this, arguments);
     };
 })();
 
-let startTest = (() => {
-    var _ref4 = _asyncToGenerator(function* () {});
+let startDevelopment = (() => {
+    var _ref4 = _asyncToGenerator(function* () {
+        return startProduction();
+    });
 
-    return function startTest() {
+    return function startDevelopment() {
         return _ref4.apply(this, arguments);
     };
 })();
 
-let startDevelopment = (() => {
-    var _ref5 = _asyncToGenerator(function* () {});
+let startProduction = (() => {
+    var _ref5 = _asyncToGenerator(function* () {
+        sub.on('message', function (channel, message) {
+            if (process.env.NODE_ENV !== 'production') {
+                console.log({ channel, message });
+            }
+            multiExecAsync(client, function (multi) {
+                multi.lpush(config.pushQueue, message);
+                multi.ltrim(config.pushQueue, 0, config.trimLength);
+            });
+        });
+        return sub.subscribe(config.subscribeChannel);
+    });
 
-    return function startDevelopment() {
+    return function startProduction() {
         return _ref5.apply(this, arguments);
     };
 })();
@@ -82,23 +95,14 @@ const lodash = require('lodash');
 const Promise = require('bluebird');
 
 const envName = process.env.NODE_ENV || 'production';
-const config = require(process.env.configFile || '../config/' + envName);
+const envKeys = ['subscribeChannel', 'pushQueue', 'trimLength'];
+const config = {};
 const state = {};
 const redis = require('redis');
 const client = Promise.promisifyAll(redis.createClient());
+const sub = redis.createClient();
 
-class Counter {
-    constructor() {
-        this.count = 0;
-    }
-}
-
-class TimestampedCounter {
-    constructor() {
-        this.timestamp = Date.now();
-        this.count = 0;
-    }
-}
+assert(process.env.NODE_ENV);
 
 start().then(() => {}).catch(err => {
     console.log(err);
