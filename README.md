@@ -34,7 +34,7 @@ Sample Node code for a client logger that publishes via Redis:
 ```javascript
 const createLogger = (loggerName) => ['debug', 'info', 'warn', 'error'].reduce((logger, level) => {
     logger[level] = function() {
-        if (!client || client.ended === true) { // Redis client
+        if (!client || client.ended === true) { // Redis client not ended
         } else if (level === 'debug' && !process.env.NODE_ENV) { // safety in production when not set
         } else if (level === 'debug' && process.env.NODE_ENV === 'production') {
         } else {
