@@ -76,4 +76,4 @@ where logged errors are specially handled i.e. a slice of the `stack` is logged 
   ]
 ]
 ```
-where the first element `error` is the logger `level` which indicates this was logged via `logger.error()`
+where the first item `"error"` is the logger `level` which indicates this was logged via `logger.error()`
