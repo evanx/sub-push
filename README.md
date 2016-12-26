@@ -13,7 +13,7 @@ trimLength=99 subscribeChannel=logger:test pushQueue=logger:test npm start
 ```
 where `trimLength` ensures the list is continually trimmed for safety purposes.
 
-Then in order to "subscribe" to JSON logging messages and format these in my terminal, I use
+Then in order to "subscribe" to JSON logging messages and format these in my terminal, we can use
 the following command line:
 ```
 while /bin/true ; do redis-cli brpop logger:test 4 | grep '^\[' | jq '.'; done
