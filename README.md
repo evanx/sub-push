@@ -55,7 +55,7 @@ const createRedisLogger = (client, loggerName) => ['debug', 'info', 'warn', 'err
     return logger;
 }, {});
 ```
-where logged errors are specially handled e.g.:
+where logged errors are specially handled i.e. a slice of the `stack` is logged e.g.:
 ```
 [
   "error",
