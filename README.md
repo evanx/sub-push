@@ -24,7 +24,7 @@ We manually publish a test logging message as follows:
 ```
 redis-cli publish logger:test '["info", {"name": "evanx"}]'
 ```
-Then we see:
+and see it formatted via `jq`
 ```json
 [
   "info",
