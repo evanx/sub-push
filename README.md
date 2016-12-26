@@ -32,10 +32,11 @@ Then we see:
 
 Sample Node code for a client logger that publishes via Redis:
 ```javascript
-const createRedisLogger = (client, loggerName) => ['debug', 'info', 'warn', 'error'].reduce((logger, level) => {
+const createRedisLogger = (client, loggerName) =>
+['debug', 'info', 'warn', 'error'].reduce((logger, level) => {
     logger[level] = function() {
         if (!client || client.ended === true) { // Redis client not ended
-        } else if (level === 'debug' && !process.env.NODE_ENV) { // safety in production when not set
+        } else if (level === 'debug' && !process.env.NODE_ENV) { // safety in production
         } else if (level === 'debug' && process.env.NODE_ENV === 'production') {
         } else {
             const array = [].slice.call(arguments);
