@@ -2,17 +2,21 @@
 
 A microservice to subscribe to a Redis pubsub channel, and push to a Redis list (queue).
 
-Intended for requirement I have to subscribe to logging messages which are arrays published via pubsub. However it would suit me to `brpop` from a list using `redis-cli` in order to pipe those messages into a JSON formatter.
+## Sample use create
 
-For example the following command line runs the service to subscribe to channel `logger:test` and push messages to a similarly named list.
+This service is intended for a personal requirement to subscribe to logging messages published via Redis.
+These are arrays published via pubsub. However it would suit me to `brpop` from a list using `redis-cli` in order to pipe those messages into a JSON formatter. That didn't work with `redis-cli subscribe` in my terminal.
+
+For example the following command line runs this service to subscribe to channel `logger:test` and push messages to a similarly named list.
 ```
 trimLength=99 subscribeChannel=logger:test pushQueue=logger:test npm start
 ```
 where `trimLength` ensures the list is continually trimmed for safety purposes.
 
-Then `redis-cli brpop` and pipe to `jq` for JSON formatting:
+Then in order to "subscribe" to JSON logging messages and format these in my terminal, I use
+the following command line:
 ```
-while [ 1 ] ; do redis-cli brpop logger:test 4 | grep '^\[' | jq '.'; done
+while /bin/true ; do redis-cli brpop logger:test 4 | grep '^\[' | jq '.'; done
 ```
 where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop`
 
