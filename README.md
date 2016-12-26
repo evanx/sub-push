@@ -43,8 +43,7 @@ Incidently, some sample Node code for a client logger that publishes via Redis:
 const createRedisLogger = (client, loggerName) =>
 ['debug', 'info', 'warn', 'error'].reduce((logger, level) => {
     logger[level] = function() {
-        if (!client || client.ended === true) { // Redis client not ended
-        } else if (level === 'debug' && !process.env.NODE_ENV) { // safety in production
+        if (!client || client.ended === true) { // Redis client ended
         } else if (level === 'debug' && process.env.NODE_ENV === 'production') {
         } else {
             const array = [].slice.call(arguments);
