@@ -27,7 +27,8 @@ where we see:
   {
     "name": "evanx"
   }
-]```
+]
+```
 
 Sample Node code for a client logger that publishes via Redis:
 ```javascript
