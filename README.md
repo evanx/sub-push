@@ -2,7 +2,7 @@
 
 A microservice to subscribe to a Redis pubsub channel, and push to a Redis list (queue).
 
-## Sample use create
+## Sample use case
 
 This service is intended for a personal requirement to subscribe to logging messages published via Redis.
 These are arrays published via pubsub. However it would suit me to `brpop` from a list using `redis-cli` in order to pipe those messages into a JSON formatter. That didn't work with `redis-cli subscribe` in my terminal.
@@ -35,7 +35,10 @@ and see it formatted via `jq`
 ```
 via `redis-cli brpop`
 
-Sample Node code for a client logger that publishes via Redis:
+
+## Related
+
+Incidently, some sample Node code for a client logger that publishes via Redis:
 ```javascript
 const createRedisLogger = (client, loggerName) =>
 ['debug', 'info', 'warn', 'error'].reduce((logger, level) => {
