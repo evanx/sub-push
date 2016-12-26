@@ -33,6 +33,7 @@ and see it formatted via `jq`
   }
 ]
 ```
+via `redis-cli brpop`
 
 Sample Node code for a client logger that publishes via Redis:
 ```javascript
