@@ -52,7 +52,7 @@ const createRedisLogger = (client, loggerName) => ['debug', 'info', 'warn', 'err
             client.publish(['logger', loggerName].join(':'), messageJson);
         }
     };
-    return a;
+    return logger;
 }, {});
 ```
 where logged errors are specially handled.
