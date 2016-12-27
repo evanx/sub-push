@@ -37,7 +37,7 @@ where `trimLength` ensures the list is continually trimmed for production-safety
 This service is intended for a personal requirement to subscribe to logging messages published via Redis.
 These are arrays published via pubsub.
 ```
-redis-cli publish 'logger:mylogger' '["info", "service started"]'
+redis-cli publish 'logger:mylogger' '["info", {"name": "evanx"}]'
 ```
 where we might subscribe in the terminal as follows:
 ```
@@ -52,7 +52,7 @@ Reading messages... (press Ctrl-C to quit)
 1) "pmessage"
 2) "logger:*"
 3) "logger:mylogger"
-4) "[\"info\", \"service started\"]"
+4) "[\"info\", {\"name\": \"evanx\"}]"
 ```
 However we wish to pipe the messages into a JSON formatter, and `redis-cli psubscribe` did not work for that requirement.
 
