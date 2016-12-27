@@ -64,7 +64,7 @@ However we want to pipe to a command-line JSON formatter to enjoy a more readabl
 ]
 ```
 
-However we found that `redis-cli psubscribe` didn't suit that use case. So we want to use `redis-cli brpop` to pop messages from a list rather:
+We found that `redis-cli psubscribe` didn't suit that use case. So we wish to use `redis-cli brpop` to pop messages from a list rather:
 ```shell
 while /bin/true
 do
