@@ -81,7 +81,7 @@ Alternatively `python -mjson.tool` as follows:
 ```
 where we suppress error messages from `python -mjson.tool`
 
-Alternatively we pipe the JSON to a file
+Alternatively we might append the JSON log messages to a file:
 ```shell
   redis-cli brpop logger:mylogger 4 | grep '^\[' >> /tmp/mylogger.log
 ```
