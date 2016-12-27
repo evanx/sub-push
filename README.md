@@ -54,7 +54,7 @@ Reading messages... (press Ctrl-C to quit)
 3) "logger:mylogger"
 4) "[\"info\", {\"name\": \"evanx\"}]"
 ```
-However we want to pipe to the `jq` command-line JSON formatter, to enjoy a more readable rendering:
+However we want to pipe to a command-line JSON formatter to enjoy a more readable rendering:
 ```json
 [
   "info",
