@@ -54,18 +54,7 @@ Reading messages... (press Ctrl-C to quit)
 3) "logger:mylogger"
 4) "[\"info\", {\"name\": \"evanx\"}]"
 ```
-However we wish to pipe the messages into a JSON formatter, and `redis-cli psubscribe` did not work for that requirement.
-
-As a work-around we can use `redis-cli brpop` to pop messages from a list rather:
-```shell
-while /bin/true
-do
-  redis-cli brpop logger:mylogger 4 | grep '^\[' | jq '.'
-done
-```
-where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:mylogger` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
-
-We pipe to the `jq` command-line JSON formatter, to enjoy a more readable rendering:
+However we want to pipe to the `jq` command-line JSON formatter, to enjoy a more readable rendering:
 ```json
 [
   "info",
@@ -74,12 +63,17 @@ We pipe to the `jq` command-line JSON formatter, to enjoy a more readable render
   }
 ]
 ```
-where we manually publish a test logging message as follows:
-```shell
-redis-cli publish logger:mylogger '["info", {"name": "evanx"}]'
-```
 
-Indeed, this `sub-push` service was created to enable the above work-around.
+However we found that `redis-cli psubscribe` didn't suit that use case. So we want to use `redis-cli brpop` to pop messages from a list rather:
+```shell
+while /bin/true
+do
+  redis-cli brpop logger:mylogger 4 | grep '^\[' | jq '.'
+done
+```
+where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:mylogger` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
+
+Indeed, this `sub-push` service was created to enable the above work-around, i.e. to `subscribe` to a channel and then `lpush` to a list, from which we can `brpop` and pipe to `jq`
 
 Alternatively `python -mjson.tool` as follows:
 ```shell
