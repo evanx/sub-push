@@ -30,7 +30,7 @@ For example the following command line runs this service to subscribe to channel
 ```shell
 subscribeChannel=logger:test pushQueue=logger:test trimLength=99 npm start
 ```
-where `trimLength` ensures the list is continually trimmed for safety purposes.
+where `trimLength` ensures the list is continually trimmed for production-safety, i.e. will not exceed a negligible limit of Redis memory usage.
 
 ## Sample use case
 
@@ -75,6 +75,7 @@ and see it formatted via `jq`
 ]
 ```
 via `redis-cli brpop`
+
 
 ## Related
 
