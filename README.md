@@ -141,6 +141,9 @@ where the first item `"error"` is the logger `level` which indicates this was lo
 
 ## Related projects
 
+See
+- https://github.com/evanx/sub-write - subscribe and write messages via `process.stdout`
+
 We plan to publish microservices that similarly subcribe, but with purpose-built rendering for logging messages e.g. error messages coloured red.
 
 Watch
