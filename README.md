@@ -35,21 +35,24 @@ where `trimLength` ensures the list is continually trimmed for safety purposes.
 ## Sample use case
 
 This service is intended for a personal requirement to subscribe to logging messages published via Redis.
-```
-redis-cli psubscribe 'logger:*'
-```
 These are arrays published via pubsub.
 ```
 redis-cli publish 'logger:mylogger' '["info", "service started"]'
 ```
-However it would suit me to `brpop` from a list using `redis-cli` in order to pipe those messages into a JSON formatter. That didn't work with `redis-cli psubscribe` in my terminal.
-
-Then in order to "subscribe" to JSON logging messages and format these in a console, we can use
-the following command line:
-```shell
-while /bin/true ; do redis-cli brpop logger:test 4 | grep '^\[' | jq '.'; done
+where we might subscribe in the terminal as follows:
 ```
-where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop`
+redis-cli psubscribe 'logger:*'
+```
+However we wish to pipe the messages into a JSON formatter, and `redis-cli psubscribe` did not work for that requirement.
+
+As a work-around we can use `redis-cli brpop` to pop messages from a list rather:
+```shell
+while /bin/true
+do
+  redis-cli brpop logger:test 4 | grep '^\[' | jq '.'
+done
+```
+where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
 
 We manually publish a test logging message as follows:
 ```
