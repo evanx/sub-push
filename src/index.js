@@ -2,7 +2,6 @@ const assert = require('assert');
 const lodash = require('lodash');
 const Promise = require('bluebird');
 
-const envName = process.env.NODE_ENV || 'production';
 const config = ['subscribeChannel', 'pushQueue', 'trimLength'].reduce((config, key) => {
     assert(process.env[key], key);
     config[key] = process.env[key];
