@@ -24,9 +24,6 @@ async function multiExecAsync(client, multiFunction) {
 async function start() {
     state.started = Math.floor(Date.now()/1000);
     state.pid = process.pid;
-    if (missingProps.length) {
-        throw new Error('Missing required config properties: ' + missingProps.join(', '));
-    }
     console.log('start', {config, state});
     if (process.env.NODE_ENV === 'development') {
         return startDevelopment();

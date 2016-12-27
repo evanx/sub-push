@@ -28,7 +28,7 @@ const config = ['subscribeChannel', 'pushQueue', 'trimLength'].reduce((config, k
 
 For example the following command line runs this service to subscribe to channel `logger:test` and push messages to a similarly named list.
 ```shell
-trimLength=99 subscribeChannel=logger:test pushQueue=logger:test npm start
+subscribeChannel=logger:test pushQueue=logger:test trimLength=99 npm start
 ```
 where `trimLength` ensures the list is continually trimmed for safety purposes.
 
@@ -52,7 +52,14 @@ do
   redis-cli brpop logger:test 4 | grep '^\[' | jq '.'
 done
 ```
-where we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
+where we pipe to the `jq` command-line JSON formatter.
+
+Note that we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
+
+Alternatively `python -mjson.tool` as follows:
+```  redis-cli brpop logger:phantomjs-redis 4 | grep '^\[' | python -mjson.tool 2>/dev/null
+```
+where we suppress error messages from `python -mjson.tool`
 
 We manually publish a test logging message as follows:
 ```
@@ -68,7 +75,6 @@ and see it formatted via `jq`
 ]
 ```
 via `redis-cli brpop`
-
 
 ## Related
 
@@ -111,3 +117,9 @@ where logged errors are specially handled i.e. a slice of the `stack` is logged 
 ]
 ```
 where the first item `"error"` is the logger `level` which indicates this was logged via `logger.error()`
+
+We plan to publish microservices that similarly subcribe, but with purpose-built rendering for logging messages e.g. error messages coloured red.
+
+Watch
+- https://github.com/evanx/sublog-console
+- https://github.com/evanx/sublog-web
