@@ -96,7 +96,7 @@ Then we might format the tail into JSON, and serve that file statically to view 
   ) | jq '.' > /tmp/mylogger.json
 ```
 
-## Related
+## Related code
 
 Incidently, some sample Node code for a client logger that publishes via Redis:
 ```javascript
@@ -137,6 +137,9 @@ where logged errors are specially handled i.e. a slice of the `stack` is logged 
 ]
 ```
 where the first item `"error"` is the logger `level` which indicates this was logged via `logger.error()`
+
+
+## Related projects
 
 We plan to publish microservices that similarly subcribe, but with purpose-built rendering for logging messages e.g. error messages coloured red.
 
