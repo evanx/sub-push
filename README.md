@@ -2,7 +2,7 @@
 
 A microservice to subscribe to a Redis pubsub channel, and push to a Redis list (queue).
 
-The essence of the implementation as follows:
+The essence of the implementation is as follows:
 ```javascript
 async function startProduction() {
     sub.on('message', (channel, message) => {
