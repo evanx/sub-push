@@ -43,6 +43,17 @@ where we might subscribe in the terminal as follows:
 ```
 redis-cli psubscribe 'logger:*'
 ```
+where we see the messages in the console as follows:
+```
+Reading messages... (press Ctrl-C to quit)
+1) "psubscribe"
+2) "logger:*"
+3) (integer) 1
+1) "pmessage"
+2) "logger:*"
+3) "logger:mylogger"
+4) "[\"info\", \"service started\"]"
+```
 However we wish to pipe the messages into a JSON formatter, and `redis-cli psubscribe` did not work for that requirement.
 
 As a work-around we can use `redis-cli brpop` to pop messages from a list rather:
