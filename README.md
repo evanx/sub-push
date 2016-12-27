@@ -63,14 +63,21 @@ do
   redis-cli brpop logger:test 4 | grep '^\[' | jq '.'
 done
 ```
-where we pipe to the `jq` command-line JSON formatter.
+where we pipe to the `jq` command-line JSON formatter, to enjoy a more readable rendering:
+```json
+[
+    "info",
+    "service started"
+]
+```
 
 Indeed, this `sub-push` service was created to enable the above work-around.
 
 Note that we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
 
 Alternatively `python -mjson.tool` as follows:
-```  redis-cli brpop logger:phantomjs-redis 4 | grep '^\[' | python -mjson.tool 2>/dev/null
+```
+   redis-cli brpop logger:phantomjs-redis 4 | grep '^\[' | python -mjson.tool 2>/dev/null
 ```
 where we suppress error messages from `python -mjson.tool`
 
