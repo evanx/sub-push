@@ -26,9 +26,9 @@ const config = ['subscribeChannel', 'pushQueue', 'trimLength'].reduce((config, k
 }, {});
 ```
 
-For example the following command line runs this service to subscribe to channel `logger:test` and push messages to a similarly named list.
+For example the following command line runs this service to subscribe to channel `logger:mylogger` and push messages to a similarly named list.
 ```shell
-subscribeChannel=logger:test pushQueue=logger:test trimLength=99 npm start
+subscribeChannel=logger:mylogger pushQueue=logger:mylogger trimLength=99 npm start
 ```
 where `trimLength` ensures the list is continually trimmed for production-safety, i.e. will not exceed a negligible limit of Redis memory usage.
 
@@ -60,7 +60,7 @@ As a work-around we can use `redis-cli brpop` to pop messages from a list rather
 ```shell
 while /bin/true
 do
-  redis-cli brpop logger:test 4 | grep '^\[' | jq '.'
+  redis-cli brpop logger:mylogger 4 | grep '^\[' | jq '.'
 done
 ```
 where we pipe to the `jq` command-line JSON formatter, to enjoy a more readable rendering:
@@ -73,17 +73,17 @@ where we pipe to the `jq` command-line JSON formatter, to enjoy a more readable 
 
 Indeed, this `sub-push` service was created to enable the above work-around.
 
-Note that we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:test` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
+Note that we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:mylogger` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
 
 Alternatively `python -mjson.tool` as follows:
 ```
-   redis-cli brpop logger:phantomjs-redis 4 | grep '^\[' | python -mjson.tool 2>/dev/null
+   redis-cli brpop logger:mylogger 4 | grep '^\[' | python -mjson.tool 2>/dev/null
 ```
 where we suppress error messages from `python -mjson.tool`
 
 We manually publish a test logging message as follows:
 ```
-redis-cli publish logger:test '["info", {"name": "evanx"}]'
+redis-cli publish logger:mylogger '["info", {"name": "evanx"}]'
 ```
 and see it formatted via `jq`
 ```json
