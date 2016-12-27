@@ -63,7 +63,7 @@ let startProduction = (() => {
                 multi.ltrim(config.pushQueue, 0, config.trimLength);
             });
         });
-        return sub.subscribe(config.subscribeChannel);
+        sub.subscribe(config.subscribeChannel);
     });
 
     return function startProduction() {

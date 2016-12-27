@@ -55,7 +55,7 @@ async function startProduction() {
             multi.ltrim(config.pushQueue, 0, config.trimLength);
         });
     });
-    return sub.subscribe(config.subscribeChannel);
+    sub.subscribe(config.subscribeChannel);
 }
 
 async function end() {
