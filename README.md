@@ -90,7 +90,9 @@ Then we might format the tail into JSON, and serve that file statically to view 
 ```shell
   (
       echo '['
-      cat /tmp/mylogger.log | tail -10 | tac | sed 's/$/,/'; echo '""]'
+      cat /tmp/mylogger.log | tail -9 | tac | sed 's/$/,/'
+      cat /tmp/mylogger.log | tail -10 | head -1
+      echo ']'
   ) | jq '.' > /tmp/mylogger.json
 ```
 
