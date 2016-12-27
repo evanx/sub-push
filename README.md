@@ -20,7 +20,7 @@ async function startProduction() {
 where `config` is populated from environment variables as follows:
 ```javascript
 const config = ['subscribeChannel', 'pushQueue', 'trimLength'].reduce((config, key) => {
-    assert(process.env[key], `env.${key}`);
+    assert(process.env[key], key);
     config[key] = process.env[key];    
     return config;
 }, {});
