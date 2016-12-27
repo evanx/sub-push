@@ -66,9 +66,15 @@ done
 where we pipe to the `jq` command-line JSON formatter, to enjoy a more readable rendering:
 ```json
 [
-    "info",
-    "service started"
+  "info",
+  {
+    "name": "evanx"
+  }
 ]
+```
+where we manually publish a test logging message as follows:
+```shell
+redis-cli publish logger:mylogger '["info", {"name": "evanx"}]'
 ```
 
 Indeed, this `sub-push` service was created to enable the above work-around.
@@ -76,26 +82,10 @@ Indeed, this `sub-push` service was created to enable the above work-around.
 Note that we "grep" for our logging message JSON which is an array, so starts with a square bracket. This will exclude the line which is the list key e.g. `logger:mylogger` also returned by `brpop` and also blank lines when the `4` seconds timeout expires and an empty line is output by `redis-cli brpop`
 
 Alternatively `python -mjson.tool` as follows:
-```
+```shell
    redis-cli brpop logger:mylogger 4 | grep '^\[' | python -mjson.tool 2>/dev/null
 ```
 where we suppress error messages from `python -mjson.tool`
-
-We manually publish a test logging message as follows:
-```
-redis-cli publish logger:mylogger '["info", {"name": "evanx"}]'
-```
-and see it formatted via `jq`
-```json
-[
-  "info",
-  {
-    "name": "evanx"
-  }
-]
-```
-via `redis-cli brpop`
-
 
 ## Related
 
