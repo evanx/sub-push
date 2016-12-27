@@ -81,6 +81,19 @@ Alternatively `python -mjson.tool` as follows:
 ```
 where we suppress error messages from `python -mjson.tool`
 
+Alternatively we pipe the JSON to a file
+```shell
+  redis-cli brpop logger:mylogger 4 | grep '^\[' >> /tmp/mylogger.log
+```
+
+Then we might format the tail into JSON, and serve that file statically to view in our browser using a JSON formatter extension.
+```shell
+  (
+      echo '['
+      cat /tmp/mylogger.log | tail -10 | tac | sed 's/$/,/'; echo '""]'
+  ) | jq '.' > /tmp/mylogger.json
+```
+
 ## Related
 
 Incidently, some sample Node code for a client logger that publishes via Redis:
